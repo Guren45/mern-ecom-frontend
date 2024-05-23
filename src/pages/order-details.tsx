@@ -26,18 +26,6 @@ interface OrderDetailsType {
   status: string;
 }
 
-interface Order {
-  _id: string;
-  user: {
-    name: string;
-    email: string; // Ensure this field exists
-  };
-  orderItems: OrderItem[];
-  total: number;
-  discount: number;
-  status: string;
-}
-
 const OrderDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useSelector((state: RootState) => state.userReducer);
@@ -54,10 +42,25 @@ const OrderDetails = () => {
   }, [isError, error]);
 
   useEffect(() => {
-    if (data) {
-      setOrderDetails(data.order as OrderDetailsType); // Cast to correct type
+    if (data && isValidOrder(data.order)) {
+      setOrderDetails(data.order);
     }
   }, [data]);
+
+  const isValidOrder = (order: any): order is OrderDetailsType => {
+    return (
+      order &&
+      order._id &&
+      order.user &&
+      order.user.name &&
+      order.user.email &&
+      order.orderItems &&
+      Array.isArray(order.orderItems) &&
+      order.total !== undefined &&
+      order.discount !== undefined &&
+      order.status !== undefined
+    );
+  };
 
   if (!user) {
     return <Skeleton length={20} />;
