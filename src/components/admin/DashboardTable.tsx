@@ -7,7 +7,9 @@ interface DataType {
   discount: number;
   amount: number;
   status: string;
+  [key: string]: unknown; // Add this line to satisfy Record<string, unknown>
 }
+
 
 const columns: Column<DataType>[] = [
   {

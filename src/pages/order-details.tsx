@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -26,6 +26,18 @@ interface OrderDetailsType {
   status: string;
 }
 
+interface Order {
+  _id: string;
+  user: {
+    name: string;
+    email: string; // Ensure this field exists
+  };
+  orderItems: OrderItem[];
+  total: number;
+  discount: number;
+  status: string;
+}
+
 const OrderDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useSelector((state: RootState) => state.userReducer);
@@ -43,7 +55,7 @@ const OrderDetails = () => {
 
   useEffect(() => {
     if (data) {
-      setOrderDetails(data.order);
+      setOrderDetails(data.order as OrderDetailsType); // Cast to correct type
     }
   }, [data]);
 
