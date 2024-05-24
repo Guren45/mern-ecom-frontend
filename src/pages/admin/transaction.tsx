@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -10,13 +10,8 @@ import { useAllOrdersQuery } from "../../redux/api/orderAPI";
 import { RootState } from "../../redux/store";
 import { CustomError } from "../../types/api-types";
 
-interface DataType extends Record<string, unknown> {
-  user: string;
-  amount: number;
-  discount: number;
-  quantity: number;
-  status: ReactElement;
-  action: ReactElement;
+interface DataType {
+  [key: string]: string | number | React.ReactElement;
 }
 
 const columns: Column<DataType>[] = [
@@ -40,21 +35,19 @@ const columns: Column<DataType>[] = [
     Header: "Status",
     accessor: "status",
   },
-  {
-    Header: "Action",
-    accessor: "action",
-  },
+  
 ];
 
 const Transaction = () => {
   const { user } = useSelector((state: RootState) => state.userReducer);
+  const userId = user?._id || ""; // Providing default value of empty string if user or user._id is undefined
 
-  const { isLoading, data, isError, error } = useAllOrdersQuery(user?._id || "");
+  const { isLoading, data, isError, error } = useAllOrdersQuery(userId);
 
   const [rows, setRows] = useState<DataType[]>([]);
 
   useEffect(() => {
-    if (isError && error) {
+    if (isError) {
       const err = error as CustomError;
       toast.error(err.data.message);
     }
@@ -63,25 +56,25 @@ const Transaction = () => {
   useEffect(() => {
     if (data) {
       setRows(
-        data.orders.map((i) => ({
-          user: i.user.name,
-          amount: i.total,
-          discount: i.discount,
-          quantity: i.orderItems.length,
+        data.orders.map((order) => ({
+          user: order.user.name,
+          amount: order.total,
+          discount: order.discount,
+          quantity: order.orderItems.length,
           status: (
             <span
               className={
-                i.status === "Processing"
+                order.status === "Processing"
                   ? "red"
-                  : i.status === "Shipped"
+                  : order.status === "Shipped"
                   ? "green"
                   : "purple"
               }
             >
-              {i.status}
+              {order.status}
             </span>
           ),
-          action: <Link to={`/admin/transaction/${i._id}`}>Manage</Link>,
+          
         }))
       );
     }

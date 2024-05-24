@@ -39,10 +39,7 @@ const column: Column<DataType>[] = [
     Header: "Status",
     accessor: "status",
   },
-  {
-    Header: "Action",
-    accessor: "action",
-  },
+  
 ];
 
 const Orders = () => {
@@ -80,7 +77,7 @@ const Orders = () => {
               {i.status}
             </span>
           ),
-          action: <Link to={`/admin/transaction/${i._id}`}>Manage</Link>,
+          action: <Link to={`/admin/transaction/${i._id}`}></Link>,
         }))
       );
     }
